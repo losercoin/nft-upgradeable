@@ -1,0 +1,30 @@
+{
+  "name": "nft-upgradeable",
+  "version": "1.0.0",
+  "description": "upgradeable ERC721 contract for LOWB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cnmozzie/nft-upgradeable.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cnmozzie/nft-upgradeable/issues"
+  },
+  "homepage": "https://github.com/cnmozzie/nft-upgradeable#readme",
+  "devDependencies": {
+    "@openzeppelin/contracts-upgradeable": "^4.1.0",
+    "@openzeppelin/truffle-upgrades": "^1.7.0",
+    "chai": "^4.3.4",
+    "truffle": "^5.3.6",
+    "truffle-plugin-verify": "^0.5.8"
+  },
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^1.2.2"
+  }
+}
