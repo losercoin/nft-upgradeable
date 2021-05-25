@@ -19,14 +19,15 @@ We follow [this guide](https://forum.openzeppelin.com/t/openzeppelin-upgrades-st
   ```javascript
   truffle(development)> let nft = await MyCollectible.deployed()
   truffle(development)> let accounts = await web3.eth.getAccounts()
-  truffle(development)> nft.awardItem(accounts[0], "https://game.example/item-id-8u5h2m.json")
+  truffle(development)> nft.awardItem(accounts[0], "https://statics.pkumozzie.cn/lowc/test-1.json")
   Transaction successful. Transaction hash: 0x...
-  truffle(development)> nft.ownerOf(1)
+  truffle(development)> let tokenId = (await nft.tokenByIndex(0)).toString()
+  truffle(development)> nft.ownerOf(tokenId)
   "0x..."
-  truffle(development)> nft.creatorOf(1)
+  truffle(development)> nft.creatorOf(tokenId)
   "0x..."
-  truffle(development)> nft.tokenURI(1)
-  "https://game.example/item-id-8u5h2m.json"
+  truffle(development)> nft.tokenURI(tokenId)
+  "https://statics.pkumozzie.cn/lowc/test-1.json"
   ```
 ### Depolying to the live network
 
