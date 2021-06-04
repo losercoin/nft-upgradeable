@@ -13,7 +13,8 @@ contract('MyCollectible (proxy)', async accounts => {
     // Deploy a new MyCollectible contract for each test
     this.myCollectible = await deployProxy(MyCollectible, [], {initializer: 'initialize'});
     // award an item to someone
-    await this.myCollectible.awardItem(accounts[0], "https://statics.pkumozzie.cn/lowc/test-1.json")
+    await this.myCollectible.publish(accounts[0], 2, "https://game.example/item-id-8u5h2m.json")
+    await this.myCollectible.publish(accounts[0], 5, "https://game.example/item-id-8u5h2m-2.json")
   });
 
   // Test case
@@ -26,34 +27,38 @@ contract('MyCollectible (proxy)', async accounts => {
   it('symbol returns the symbol of this NFT', async function () {
  
     // Test if the returned string is the same one we initialized
-    expect(await this.myCollectible.symbol()).to.equal('Lowc');
-  });
-
-  // Test case
-  it('totalSupply returns the total amount of tokens stored by the contract', async function () {
- 
-    // Test if the returned string is the same one we initialized
-    expect((await this.myCollectible.totalSupply()).toString()).to.equal('1');
+    expect(await this.myCollectible.symbol()).to.equal('LOWC');
   });
 
   it('ownerOf returns the onwer address of the item', async function () {
-    let tokenId = (await this.myCollectible.tokenByIndex(0)).toString()
-    let owner = await this.myCollectible.ownerOf(tokenId)
+    let owner = await this.myCollectible.ownerOf(1)
     // Test if the returned the address we award to
     expect(owner).to.equal(accounts[0]);
   });
 
   it('tokenURI returns the uri of the item', async function () {
-    let tokenId = (await this.myCollectible.tokenByIndex(0)).toString()
-    let tokenURI = await this.myCollectible.tokenURI(tokenId)
+    let tokenURI = await this.myCollectible.tokenURI(1)
     // Test if the returned the item's uri
     expect(tokenURI).to.equal("https://game.example/item-id-8u5h2m.json");
   });
 
   it('creatorOf returns the creator address of the item', async function () {
-    let tokenId = (await this.myCollectible.tokenByIndex(0)).toString()
-    let creator = await this.myCollectible.creatorOf(tokenId)
+    let creator = await this.myCollectible.creatorOf(1)
     // Test if the returned the item's uri
     expect(creator).to.equal(accounts[0]);
+  });
+
+  it('groupCurrentSupply returns 2 after claim a new token', async function () {
+    await this.myCollectible.claim(accounts[0], 2)
+    let groupCurrentSupply = await this.myCollectible.groupCurrentSupply(2)
+    // Test if the returned the group's supply
+    expect(groupCurrentSupply.toString()).to.equal('2');
+  });
+
+  it('ownerOf returns owner address of item 2 after claiming a new token', async function () {
+    await this.myCollectible.claim(accounts[1], 2)
+    let owner = await this.myCollectible.ownerOf(4)
+    // Test if the returned the address one claim to
+    expect(owner).to.equal(accounts[1]);
   });
 });

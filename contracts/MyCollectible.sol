@@ -3,59 +3,66 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract MyCollectible is ERC721URIStorageUpgradeable, ERC721EnumerableUpgradeable, OwnableUpgradeable {
+contract MyCollectible is ERC721EnumerableUpgradeable, OwnableUpgradeable {
+    using CountersUpgradeable for CountersUpgradeable.Counter;
+    CountersUpgradeable.Counter public groupIds;
+    uint256 _groupStartPointer;
 
     mapping (uint => address) public creatorOf;
+    mapping (uint => uint) public groupOf;
+    mapping (uint => string) private _groupURI;
+    mapping (uint => uint) public groupStart;
+    mapping (uint => uint) public groupCurrentSupply;
+    mapping (uint => uint) public groupMaxSupply;
 
     function initialize() initializer public {
-        __ERC721_init("Loser Collectible", "Lowc");
+        __ERC721_init("Loser Collectible", "LOWC");
         OwnableUpgradeable.__Ownable_init();
     }
 
-    function awardItem(address to, string memory _tokenURI)
+    function publish(address to, uint256 maxSupply, string memory _tokenURI)
         public onlyOwner
         returns (uint256)
     {
+        groupIds.increment();
+        uint256 newItemId = groupIds.current();
+        uint256 startId = _groupStartPointer + 1;
+        groupStart[newItemId] = startId;
+        groupMaxSupply[newItemId] = maxSupply;
+        _groupURI[newItemId] = _tokenURI;
+        creatorOf[newItemId] = to;
+        _groupStartPointer += maxSupply;
 
-        uint256 itemId = uint(keccak256(abi.encodePacked(_tokenURI)));
-        _mint(to, itemId);
-        _setTokenURI(itemId, _tokenURI);
-
-        creatorOf[itemId] = to;
-
-        return itemId;
+        _mint(to, startId);
+        groupOf[startId] = newItemId;
+        groupCurrentSupply[newItemId] = 1;
+        return newItemId;
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-        internal
-        override(ERC721Upgradeable, ERC721EnumerableUpgradeable)
+    function claim(address to, uint256 groupId)
+        public 
+        returns (uint256)
     {
-        super._beforeTokenTransfer(from, to, tokenId);
-    }
+        require(groupCurrentSupply[groupId] < groupMaxSupply[groupId], "All tokens of this group has been minted.");
+        uint256 startId = groupStart[groupId];
+        require(ownerOf(startId) == msg.sender || getApproved(startId) == msg.sender, "You don't have the access to mint this token.");
+        uint256 newtokenId = startId + groupCurrentSupply[groupId];
 
-    function _burn(uint256 tokenId) internal override(ERC721Upgradeable, ERC721URIStorageUpgradeable) {
-        super._burn(tokenId);
+        _mint(to, newtokenId);
+        groupOf[newtokenId] = groupId;
+        groupCurrentSupply[groupId] += 1;
+        return newtokenId;
     }
 
     function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
+        public view override
         returns (string memory)
     {
-        return super.tokenURI(tokenId);
-    }
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721Upgradeable, ERC721EnumerableUpgradeable)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
+        uint256 groupId = groupOf[tokenId];
+        return _groupURI[groupId];
     }
 }
