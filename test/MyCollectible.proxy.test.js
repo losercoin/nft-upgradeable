@@ -13,21 +13,22 @@ contract('MyCollectible (proxy)', async accounts => {
     // Deploy a new MyCollectible contract for each test
     this.myCollectible = await deployProxy(MyCollectible, [], {initializer: 'initialize'});
     // award an item to someone
-    await this.myCollectible.publish(accounts[0], 2, "https://game.example/item-id-8u5h2m.json")
-    await this.myCollectible.publish(accounts[0], 5, "https://game.example/item-id-8u5h2m-2.json")
+    await this.myCollectible.addSerial(3, 10)
+    await this.myCollectible.publish(accounts[0], 1, 2, "https://ipfs.io/ipfs/QmQax9La6KjbFp4qbjwL2ucYCazZcVr9jSYuhrqgsDMpwb", 0)
+    await this.myCollectible.publish(accounts[0], 1, 5, "https://ipfs.io/ipfs/QmeZo1a7hQXTCf6Zhw7SbxzcMoP49LbfBxUCT1oHXHnWxo", 500)
   });
 
   // Test case
   it('name returns the name of this NFT', async function () {
  
     // Test if the returned string is the same one we initialized
-    expect(await this.myCollectible.name()).to.equal('Loser Collectible');
+    expect(await this.myCollectible.name()).to.equal('Loser NFT');
   });
 
   it('symbol returns the symbol of this NFT', async function () {
  
     // Test if the returned string is the same one we initialized
-    expect(await this.myCollectible.symbol()).to.equal('LOWC');
+    expect(await this.myCollectible.symbol()).to.equal('LOWX');
   });
 
   it('ownerOf returns the onwer address of the item', async function () {
@@ -39,7 +40,7 @@ contract('MyCollectible (proxy)', async accounts => {
   it('tokenURI returns the uri of the item', async function () {
     let tokenURI = await this.myCollectible.tokenURI(1)
     // Test if the returned the item's uri
-    expect(tokenURI).to.equal("https://game.example/item-id-8u5h2m.json");
+    expect(tokenURI).to.equal("https://ipfs.io/ipfs/QmQax9La6KjbFp4qbjwL2ucYCazZcVr9jSYuhrqgsDMpwb");
   });
 
   it('creatorOf returns the creator address of the item', async function () {
