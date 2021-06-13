@@ -33,6 +33,10 @@ contract MyCollectible is ERC721EnumerableUpgradeable, OwnableUpgradeable {
     /* Inverse basis point. */
     uint public constant INVERSE_BASIS_POINT = 10000;
 
+    event SerialAdded(uint indexed serialId, uint maxGroup, uint maxSupply);
+    event GroupPublished(uint indexed groupId, uint indexed serialId, uint maxSupply);
+    event NewItemClaimed(uint indexed itemId, uint indexed groupId, address indexed toAddress);
+
     function initialize() initializer public {
         __ERC721_init("Loser NFT", "LOWX");
         OwnableUpgradeable.__Ownable_init();
@@ -50,6 +54,8 @@ contract MyCollectible is ERC721EnumerableUpgradeable, OwnableUpgradeable {
         serialMaxGroup[newSerialId] = maxGroup;
         _serialTokenStart += maxSupply;
         _serialGroupStart += maxGroup;
+
+        emit SerialAdded(newSerialId, maxGroup, maxSupply);
 
         return newSerialId;
     }
@@ -78,6 +84,9 @@ contract MyCollectible is ERC721EnumerableUpgradeable, OwnableUpgradeable {
         _mint(to, tokenId);
         groupOf[tokenId] = groupId;
         groupCurrentSupply[groupId] = 1;
+
+        emit GroupPublished(groupId, serial, maxSupply);
+
         return groupId;
     }
 
@@ -93,6 +102,9 @@ contract MyCollectible is ERC721EnumerableUpgradeable, OwnableUpgradeable {
         _mint(to, newtokenId);
         groupOf[newtokenId] = groupId;
         groupCurrentSupply[groupId] += 1;
+
+        emit NewItemClaimed(newtokenId, groupId, to);
+
         return newtokenId;
     }
 
