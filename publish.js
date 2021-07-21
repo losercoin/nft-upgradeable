@@ -1,5 +1,5 @@
 const fs = require('fs');
-const N = 10
+const N = 1
 const fee = 250
 const MyCollectible = artifacts.require('MyCollectible');
 
@@ -15,7 +15,7 @@ module.exports = async function(callback) {
     const current_supply = (await nft.totalSupply()).toNumber()
     for (let i=current_supply; i<current_supply+N; i++) {
       console.log(losers[i].id, "https://ipfs.io/ipfs/" + losers[i].hash)
-      await nft.publish(accounts[0], 1, 1, "https://ipfs.io/ipfs/" + losers[i].hash, fee)
+      await nft.publish('0xdd2739e731b584f5b0a2ef07054a1229abc4dd42', 1, 1, "https://ipfs.io/ipfs/" + losers[i].hash, fee)
     }
     
 

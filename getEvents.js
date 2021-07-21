@@ -3,7 +3,7 @@ const MyCollectible = artifacts.require('MyCollectible');
 
 module.exports = async function(callback) {
   try {
-    let rawdata = fs.readFileSync('events-main-1.json');
+    let rawdata = fs.readFileSync('events-main-9.json');
     let events = JSON.parse(rawdata);
     
     const blockStart = events["blockNumber"]
@@ -14,14 +14,14 @@ module.exports = async function(callback) {
     let block = await web3.eth.getBlockNumber()
     console.log(blockStart, block)
 
-    const transaction = await nft.getPastEvents('Transfer', { fromBlock: 8492441, toBlock: 8496441 })
+    const transaction = await nft.getPastEvents('Transfer', { fromBlock: 9201000, toBlock: 9203000 })
     //const transaction = await nft.getPastEvents('Transfer', { filter: {from: '0x0000000000000000000000000000000000000000'}, fromBlock: 0, toBlock: 'latest' })
 
     events["Transfer"].push.apply(events["Transfer"], transaction)
     events["blockNumber"] = block
 
     let data = JSON.stringify(events);
-    fs.writeFileSync('events-main-2.json', data);
+    fs.writeFileSync('events-main-8.json', data);
     
 
   }
